@@ -16,7 +16,10 @@
          [str-without-colon (string-replace str timezone-colon-regex "")])
     (string->date str-without-colon template-string)))
 
+; The maximum number of <item> elements to include in the feed.
 (define max-feed-items (make-parameter 20))
+; The location where this feed is hosted, for <atom:link rel="self">.
+(define self-link (make-parameter "https://minecraft-updates-rss-feed.arm32x.repl.co/feed.rss"))
 
 (define (get-java-patch-notes-jsexpr)
   (define-values (status headers input-port)
@@ -66,7 +69,7 @@
               "https://www.minecraft.net/en-us/article/"
               (minecraft-slugify (hash-ref patch-notes 'title))))
      (description ,(hash-ref patch-notes 'body))
-     (guid ((isPermaLink "false")) ,(hash-ref patch-notes 'id))
+     (guid ([isPermaLink "false"]) ,(hash-ref patch-notes 'id))
      (pubDate ,(date->string
                  (parse-iso8601-date (hash-ref version-manifest 'releaseTime))
                  rfc2822-date-format))))
@@ -90,13 +93,17 @@
                                    
 
 (define (generate-feed-xexpr)
-  `(rss ((version "2.0"))
+  `(rss ([version "2.0"]
+         [xmlns:atom "http://www.w3.org/2005/Atom"])
      (channel
        (title "Minecraft Updates")
        (link "https://www.minecraft.net/en-us")
        (description "Patch notes for Minecraft: Java Edition snapshots and releases")
        (language "en-us")
-       (lastBuildTime ,(date->string (current-date) rfc2822-date-format))
+       (lastBuildDate ,(date->string (current-date) rfc2822-date-format))
+       (atom:link ([href ,(self-link)]
+                   [rel "self"]
+                   [type "application/rss+xml"]))
        ,@(for/list ([version-pair (preprocess-versions
                                     (get-java-patch-notes-jsexpr)
                                     (get-version-manifest-jsexpr))])
@@ -111,8 +118,8 @@
         #:indentation 'scan))
     #:code 200
     #:seconds (current-seconds)
-    #| #:mime-type #"application/rss+xml)]); charset=utf-8" |#
-    #:mime-type #"text/xml; charset=utf-8"
+    #:mime-type #"application/rss+xml"
+    #| #:mime-type #"text/xml); charset=utf-8" |#
     #:headers '()))
 
 (serve/servlet
