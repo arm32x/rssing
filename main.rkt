@@ -19,7 +19,7 @@
 ; The maximum number of <item> elements to include in the feed.
 (define max-feed-items (make-parameter 20))
 ; The location where this feed is hosted, for <atom:link rel="self">.
-(define self-link (make-parameter "https://minecraft-updates-rss-feed.arm32x.repl.co/feed.rss"))
+(define self-link (make-parameter "https://minecraft-updates-rss-feed.arm32.ax/feed.rss"))
 ; How long to keep a generated feed in the cache, in minutes.
 (define cached-feed-ttl-minutes (make-parameter 15))
 
