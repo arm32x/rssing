@@ -20,6 +20,8 @@
 (define max-feed-items (make-parameter 20))
 ; The location where this feed is hosted, for <atom:link rel="self">.
 (define self-link (make-parameter "https://minecraft-updates-rss-feed.arm32x.repl.co/feed.rss"))
+; How long to keep a generated feed in the cache, in minutes.
+(define cached-feed-ttl-minutes (make-parameter 15))
 
 (define (get-java-patch-notes-jsexpr)
   (define-values (status headers input-port)
@@ -91,7 +93,6 @@
                                    (hash-ref patch-notes 'version)))
                version-manifest-versions)))))
                                    
-
 (define (generate-feed-xexpr)
   `(rss ([version "2.0"]
          [xmlns:atom "http://www.w3.org/2005/Atom"])
@@ -109,11 +110,26 @@
                                     (get-version-manifest-jsexpr))])
            (generate-item-xexpr (car version-pair) (cdr version-pair))))))
 
+(define cached-feed-last-updated null)
+(define cached-feed-xexpr null)
+
+(define (get-or-generate-feed-xexpr)
+  (let ([current-time (current-inexact-monotonic-milliseconds)])
+    (if (and
+          (not (null? cached-feed-last-updated))
+          (not (null? cached-feed-xexpr))
+          (< current-time (+ cached-feed-last-updated (* (cached-feed-ttl-minutes) 60000))))
+      cached-feed-xexpr
+      (let ([feed-xexpr (generate-feed-xexpr)])
+        (set! cached-feed-xexpr feed-xexpr)
+        (set! cached-feed-last-updated (current-inexact-monotonic-milliseconds))
+        feed-xexpr))))
+
 (define (request-handler request)
   (response/output
     (lambda (output-port)
       (display-xml/content
-        (xexpr->xml (generate-feed-xexpr))
+        (xexpr->xml (get-or-generate-feed-xexpr))
         output-port
         #:indentation 'scan))
     #:code 200
