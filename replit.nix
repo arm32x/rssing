@@ -1,5 +1,6 @@
-{ pkgs }: {
-    deps = [
-      pkgs.racket
-    ];
+{ pkgs }:
+{
+  deps = [
+    pkgs.racket
+  ];
 }
