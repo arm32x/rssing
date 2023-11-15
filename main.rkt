@@ -20,8 +20,6 @@
 (define max-feed-items (make-parameter 20))
 ; The location where this feed is hosted, for <atom:link rel="self">.
 (define self-link (make-parameter "https://minecraft-updates-rss-feed.arm32.ax/feed.rss"))
-; How long to keep a generated feed in the cache, in minutes.
-(define cached-feed-ttl-minutes (make-parameter 15))
 
 (define (get-java-patch-notes-jsexpr)
   (define-values (status headers input-port)
@@ -110,40 +108,18 @@
                                     (get-version-manifest-jsexpr))])
            (generate-item-xexpr (car version-pair) (cdr version-pair))))))
 
-(define cached-feed-last-updated null)
-(define cached-feed-xexpr null)
+(define (write-feed-to-file feed-xexpr file-path)
+  (let ([output-port (open-output-file
+                       file-path
+                       #:mode 'text
+                       #:exists 'truncate/replace)])
+    (display-xml/content
+      (xexpr->xml feed-xexpr)
+      output-port
+      #:indentation 'scan)))
 
-(define (get-or-generate-feed-xexpr)
-  (let ([current-time (current-inexact-monotonic-milliseconds)])
-    (if (and
-          (not (null? cached-feed-last-updated))
-          (not (null? cached-feed-xexpr))
-          (< current-time (+ cached-feed-last-updated (* (cached-feed-ttl-minutes) 60000))))
-      cached-feed-xexpr
-      (let ([feed-xexpr (generate-feed-xexpr)])
-        (set! cached-feed-xexpr feed-xexpr)
-        (set! cached-feed-last-updated (current-inexact-monotonic-milliseconds))
-        feed-xexpr))))
-
-(define (request-handler request)
-  (response/output
-    (lambda (output-port)
-      (display-xml/content
-        (xexpr->xml (get-or-generate-feed-xexpr))
-        output-port
-        #:indentation 'scan))
-    #:code 200
-    #:seconds (current-seconds)
-    #:mime-type #"application/rss+xml"
-    #| #:mime-type #"text/xml); charset=utf-8" |#
-    #:headers '()))
-
-(serve/servlet
-  request-handler
-  #:launch-browser? #f
-  #:quit? #f
-  #:listen-ip #f
-  #:port 8000
-  #:servlet-path "/feed.rss")
+(write-feed-to-file
+  (generate-feed-xexpr)
+  "feed.rss")
 
 ; vim: sw=2 ts=2 et
