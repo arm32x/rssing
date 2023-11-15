@@ -1,0 +1,35 @@
+name: update-rss-feed
+run-name: Update Minecraft Updates RSS feed
+on:
+  schedule:
+    # “At every 15th minute past every hour from 8 through 10.” –crontab.guru
+    # This is the time period when Minecraft usually releases snapshots.
+    - cron: '*/15 8-10 * * *'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@master
+      - uses: Bogdanp/setup-racket@v1.11
+        with:
+          version: '8.10'
+      - run: mkdir _site
+      - run: racket ../main.rkt
+        working-directory: _site
+      - uses: actions/upload-pages-artifact@v2
+  deploy:
+    runs-on: ubuntu-latest
+    needs: build
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - uses: actions/deploy-pages@v2
+        id: deployment
