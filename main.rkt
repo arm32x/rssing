@@ -3,8 +3,6 @@
 (require json)
 (require net/http-client)
 (require srfi/19)
-(require web-server/servlet)
-(require web-server/servlet-env)
 (require xml)
 
 ; The ~z specifier doesn't like the colon in ISO 8601 timezones.
