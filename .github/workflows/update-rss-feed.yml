@@ -2,9 +2,9 @@ name: update-rss-feed
 run-name: Update Minecraft Updates RSS feed
 on:
   schedule:
-    # “At every 15th minute past every hour from 8 through 10.” –crontab.guru
-    # This is the time period when Minecraft usually releases snapshots.
-    - cron: '*/15 8-10 * * *'
+    # “At every 15th minute past every hour from 13 through 15.” –crontab.guru
+    # This is the time period when Minecraft usually releases snapshots (in UTC).
+    - cron: '*/15 13-15 * * *'
   workflow_dispatch:
 
 permissions:
