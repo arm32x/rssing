@@ -1,10 +1,11 @@
-name: update-rss-feed
-run-name: Update Minecraft Updates RSS feed
+name: update-rss-feeds
+run-name: Update RSS feeds
 on:
   schedule:
-    # “At every 15th minute past every hour from 13 through 15.” –crontab.guru
-    # This is the time period when Minecraft usually releases snapshots (in UTC).
-    - cron: '*/15 13-15 * * *'
+    # Run every 30 minutes. My RSS feed reader refreshes every 30 minutes, so
+    # this will result in a maximum 1 hour delay between a new item being posted
+    # and it appearing in my RSS reader.
+    - cron: '*/30 * * * *'
   workflow_dispatch:
 
 permissions:
