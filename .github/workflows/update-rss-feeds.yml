@@ -24,6 +24,9 @@ jobs:
       - run: mkdir _site
       - run: racket ../main.rkt
         working-directory: _site
+      - uses: jayanta525/github-pages-directory-listing@v4.0.0
+        with:
+          FOLDER: _site
       - uses: actions/upload-pages-artifact@v3
   deploy:
     runs-on: ubuntu-latest
