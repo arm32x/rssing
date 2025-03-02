@@ -20,7 +20,7 @@ jobs:
       - uses: actions/checkout@master
       - uses: Bogdanp/setup-racket@v1.11
         with:
-          version: '8.10'
+          version: '8.15'
       - run: mkdir _site
       - run: racket ../main.rkt
         working-directory: _site
