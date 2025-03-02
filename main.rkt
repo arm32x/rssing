@@ -14,7 +14,7 @@
                #:id       "tag:rssing.arm32.ax,2025-02-24:feed/engineering-magic-and-kitsune"
                #:title    title
                #:articles (λ () (filter (cut article-title-contains? <> title)
-                                        (reddit-rss-articles "/user/SteelTrim.rss" #:posts-only #t)))))))
+                                        (reddit-rss-articles "/user/SteelTrim.rss" #:posts-only? #t)))))))
 
 (define (write-xexpr-to-file xexpr file-path)
   (let ([output-port (open-output-file
