@@ -2,11 +2,14 @@
 
 (require srfi/19)
 (require net/url)
+(require (prefix-in xml: xml))
 
+(require "./article.rkt")
 (require "./utils/dates.rkt")
 (require "./utils/keyword-structs.rkt")
 
 (provide (struct-out feed) feed/kw)
+(provide feed-resolve-articles)
 (provide feed->xexpr)
 
 ; The location where generated feeds are hosted, for <link rel="self">
@@ -22,9 +25,17 @@
                  title
                  ; Extra X-expressions to insert into the feed metadata
                  [extra-metadata '()]
-                 ; Function that returns a list of articles
+                 ; List of articles (resolved) or a procedure that returns a list of articles
+                 ; (not resolved). Some functions require the articles to be resolved first,
+                 ; which can be done with feed-resolve-articles.
                  articles)
                 #:transparent)
+
+(define (feed-resolve-articles feed-instance)
+  (if (procedure? (feed-articles feed-instance))
+    (struct-copy feed feed-instance
+                 [articles ((feed-articles feed-instance))])
+    feed-instance))
 
 (define (feed->xexpr feed)
   `(feed ([xmlns "http://www.w3.org/2005/Atom"])
@@ -35,5 +46,8 @@
      (link ([rel "self"]
             [type "application/atom+xml"]
             [href ,(url->string (combine-url/relative base-url (feed-filename feed)))]))
-     ,@(feed-extra-metadata feed)))
+     ,@(feed-extra-metadata feed)
+     ,@(match (feed-articles feed)
+         [(list articles ...) (map article->xexpr articles)]
+         [(? procedure?)      (list (xml:comment "not resolved"))])))
 

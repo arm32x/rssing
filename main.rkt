@@ -6,6 +6,7 @@
 (require "./article.rkt")
 (require "./feed.rkt")
 (require "./sources/reddit-rss.rkt")
+(require "./utils/threading.rkt")
 
 (define feeds
   (list
@@ -25,5 +26,13 @@
       (xexpr->xml xexpr)
       output-port
       #:indentation 'scan)))
+
+(define (generate-feed feed)
+  (~> feed
+      feed-resolve-articles
+      feed->xexpr
+      (write-xexpr-to-file (feed-filename feed))))
+
+(for-each generate-feed feeds)
 
 ; vim: sw=2 ts=2 et

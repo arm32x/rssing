@@ -2,6 +2,7 @@
 
 (require net/http-client)
 (require xml)
+(require xml/path)
 
 (require "../article.rkt")
 (require "../utils/dates.rkt")
@@ -33,20 +34,25 @@
                              #:rewrite-urls? [rewrite-urls? #t])
   (let ([feed-xexpr (reddit-rss-feed-xexpr feed-path)])
     (for/list ([element-xexpr (list-tail feed-xexpr 2)]
-               #:when        (eqv? (first element-xexpr) 'entry)
-               #:do          [(match-define (list-no-order
-                                              `(id () ,id)
-                                              `(title () ,title)
-                                              `(author ()
-                                                 (name () ,author-name)
-                                                 (uri () ,author-url))
-                                              `(updated () ,(app string->date/rfc3339 date-updated))
-                                              _ ...)
-                                            (list-tail element-xexpr 2))]
-               #:when        (or (not posts-only?) (string-prefix? id "t3_")))
-      (article/kw #:id             (format "tag:rssing.arm32.ax,2025-03-02:reddit-rss/~a" id)
+               #:when (eqv? (first element-xexpr) 'entry)
+               #:do   [(define id           (se-path* '(entry id) element-xexpr))
+                       (define title        (se-path* '(entry title) element-xexpr))
+                       (define author-name  (se-path* '(entry author name) element-xexpr))
+                       (define author-url   (se-path* '(entry author uri) element-xexpr))
+                       (define date-updated (se-path* '(entry updated) element-xexpr))
+                       ; Reddit only includes one <link> element for now, so this works fine.
+                       ; I'll use a more sophisticated solution if this breaks.
+                       (define url          (se-path* '(entry link #:href) element-xexpr))
+                       (define content-type (se-path* '(content #:type) element-xexpr))
+                       (define content      (string-join (se-path*/list '(content) element-xexpr) ""))]
+               #:when (or (not posts-only?) (string-prefix? id "t3_")))
+      (article/kw #:id             (format "tag:rssing.arm32.ax,2025-03-02:reddit/~a" id)
                   #:title          title
-                  #:date-updated   date-updated
-                  #:extra-metadata `((author ()
-                                       (name () ,author-name)
-                                       (uri () ,(rewrite-urls author-url))))))))
+                  #:url            (rewrite-urls url)
+                  #:content        (cons
+                                     (match content-type ["html" 'html] ["text" 'text])
+                                     (rewrite-urls content))
+                  #:date-updated   (string->date/rfc3339 date-updated)
+                  #:extra-metadata `((author
+                                       (name ,author-name)
+                                       (uri ,(rewrite-urls author-url))))))))
