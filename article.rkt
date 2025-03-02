@@ -7,11 +7,16 @@
 (provide article-title-contains?)
 (provide article->xexpr)
 
-(struct/kw article (id                     ; A URI that uniquely identifies the article
-                    title                  ; Title of the article
-                    date-updated           ; Date of the last significant update to the article
-                    [date-published null]  ; Date the article was originally published
-                    [extra-metadata '()])  ; Extra xexprs to insert into the article metadata
+(struct/kw article (; A URI that uniquely identifies the article
+                    id
+                    ; Title of the article
+                    title
+                    ; Date of the last significant update to the article
+                    date-updated
+                    ; Date the article was originally published
+                    [date-published null]
+                    ; Extra X-expressions to insert into the article metadata
+                    [extra-metadata '()])
                    #:transparent)
 
 (define (article-title-contains? article contained)

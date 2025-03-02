@@ -14,11 +14,16 @@
 ; The GitHub repository URL, for <generator>
 (define repo-url-string "https://github.com/arm32x/rssing")
 
-(struct/kw feed (filename              ; File to write the generated feed to
-                 id                    ; A URI that uniquely identifies the generated feed
-                 title                 ; Title of the generated feed
-                 [extra-metadata '()]  ; Extra xexprs to insert into the feed metadata
-                 articles)             ; Function that returns a list of articles
+(struct/kw feed (; File to write the generated feed to
+                 filename
+                 ; A URI that uniquely identifies the generated feed
+                 id
+                 ; Title of the generated feed
+                 title
+                 ; Extra X-expressions to insert into the feed metadata
+                 [extra-metadata '()]
+                 ; Function that returns a list of articles
+                 articles)
                 #:transparent)
 
 (define (feed->xexpr feed)

@@ -25,9 +25,12 @@
     (ensure-success-status-code status-line)
     (~> input-port read-xml document-element xml->xexpr)))
 
-(define (reddit-rss-articles feed-path                            ; URL path to RSS (technically Atom) feed, with leading slash
-                             #:posts-only? [posts-only? #f]       ; If true, only posts/submissions (fullname starts with t3_) will be included
-                             #:rewrite-urls? [rewrite-urls? #t])  ; If true, rewrite all links to point to Redlib
+(define (reddit-rss-articles ; URL path to RSS (technically Atom) feed, with leading slash
+                             feed-path
+                             ; If true, only posts/submissions (fullname starts with t3_) will be included
+                             #:posts-only? [posts-only? #f]
+                             ; If true, rewrite all links to point to Redlib
+                             #:rewrite-urls? [rewrite-urls? #t])
   (let ([feed-xexpr (reddit-rss-feed-xexpr feed-path)])
     (for/list ([element-xexpr (list-tail feed-xexpr 2)]
                #:when        (eqv? (first element-xexpr) 'entry)
