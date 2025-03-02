@@ -37,3 +37,10 @@ jobs:
     steps:
       - uses: actions/deploy-pages@v4
         id: deployment
+  keepalive:
+    runs-on: ubuntu-latest
+    permissions:
+      actions: write
+    steps:
+      - uses: actions/checkout@v4
+      - uses: gautamkrishnar/keepalive-workflow@v2
