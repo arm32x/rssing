@@ -8,7 +8,6 @@
 (require "./reddit-common.rkt")
 (require "../utils/http.rkt")
 (require "../utils/threading.rkt")
-(require "../utils/quasiquote.rkt")
 
 (provide reddit-json-articles)
 
@@ -18,8 +17,8 @@
   (let*-values ([[request-url] (~> (url/kw #:scheme "https" #:host (reddit-host))
                                    (combine-url/relative (format "/user/~a/submitted.json" username))
                                    (struct-copy url _ [query `((sort . "new")
-                                                               ,@(qq-when after `(after . ,after))
-                                                               ,@(qq-when limit `(limit . ,(~a limit))))]))]
+                                                               ,@(if after `((after . ,after)) '())
+                                                               ,@(if limit `((limit . ,(~a limit))) '()))]))]
                 [[status-line headers input-port] (http-sendrecv/url request-url)])
     (ensure-success-status-code status-line)
     (let* ([response-jsexpr (read-json input-port)]
