@@ -1,5 +1,6 @@
 #lang racket
 
+(require net/url-connect)
 (require srfi/26)  ; cut macro
 (require xml)
 
@@ -32,6 +33,13 @@
       feed-resolve-articles
       feed->xexpr
       (write-xexpr-to-file (feed-filename feed))))
+
+; I'd really prefer it if Racket verified TLS cerficates by default like every other programming
+; language I'm aware of, but it doesn't.
+;
+; This enables certificate verification for URL-based HTTP requests (including http-sendrecv/url),
+; but not plain http-sendrecv. You still need to specify #:ssl? 'secure manually for those.
+(current-https-protocol 'secure)
 
 (for-each generate-feed feeds)
 

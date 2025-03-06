@@ -5,20 +5,12 @@
 (require xml/path)
 
 (require "../article.rkt")
+(require "./reddit-common.rkt")
 (require "../utils/dates.rkt")
 (require "../utils/http.rkt")
 (require "../utils/threading.rkt")
 
 (provide reddit-rss-articles)
-
-; The host to request Reddit RSS feeds from
-(define reddit-host (make-parameter "www.reddit.com"))
-; The host of the redlib instance to use in generated feeds
-(define redlib-host (make-parameter "redlib.catsarch.com"))
-
-; TODO - Use a smarter implementation, possibly the one from Redlib
-(define (rewrite-urls url-string)
-  (string-replace url-string (reddit-host) (redlib-host) #:all? #t))
 
 (define (reddit-rss-feed-xexpr feed-path)
   (let-values ([[status-line headers input-port]
@@ -46,11 +38,11 @@
                #:when (or (not posts-only?) (string-prefix? id "t3_")))
       (article/kw #:id             (format "tag:rssing.arm32.ax,2025-03-02:reddit/~a" id)
                   #:title          title
-                  #:url            (rewrite-urls url)
+                  #:url            (rewrite-reddit-urls url)
                   #:content        (cons
                                      (match content-type ["html" 'html] ["text" 'text])
-                                     (rewrite-urls content))
+                                     (rewrite-reddit-urls content))
                   #:date-updated   (string->date/rfc3339 date-updated)
                   #:extra-metadata `((author
                                        (name ,author-name)
-                                       (uri ,(rewrite-urls author-url))))))))
+                                       (uri ,(rewrite-reddit-urls author-url))))))))

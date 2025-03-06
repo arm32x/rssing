@@ -1,11 +1,13 @@
 #lang racket
 
+(require net/url)
 (require net/http-client)
 
 (require "./threading.rkt")
 
 (provide ensure-success-status-code)
 (provide exn:fail:network:http)
+(provide url/kw)
 
 (struct exn:fail:network:http exn:fail:network (status-code reason-phrase)
   #:extra-constructor-name make-exn:fail:network:http
@@ -24,3 +26,20 @@
                (current-continuation-marks)
                status-code
                reason-phrase)))))
+
+(define (url/kw #:scheme         [scheme #f]
+                #:user           [user #f]
+                #:host           [host #f]
+                #:port           [port #f]
+                #:path-absolute? [path-absolute? #t]
+                #:path           [path '()]
+                #:query          [query '()]
+                #:fragment       [fragment #f])
+  (url scheme
+       user
+       host
+       port
+       path-absolute?
+       path
+       query
+       fragment))
