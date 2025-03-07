@@ -37,6 +37,7 @@
        ,@(match (article-date-published article)
            ['()            '()]
            [date-published `((published ,(date->string/rfc3339 date-published)))])
+       ,@(article-extra-metadata article)
        (link ([rel "alternate"]
               [href ,(article-url article)]))
        (content ([type ,(symbol->string content-type)])
