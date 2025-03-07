@@ -12,12 +12,14 @@
 
 (define feeds
   (list
-    (let ([title "Engineering, Magic, and Kitsune"])
-      (feed/kw #:filename "engineering-magic-and-kitsune.atom"
-               #:id       "tag:rssing.arm32.ax,2025-02-24:feed/engineering-magic-and-kitsune"
+    (let ([slug  "engineering-magic-and-kitsune"]
+          [title "Engineering, Magic, and Kitsune"])
+      (feed/kw #:filename (format "~a.atom" slug)
+               #:id       (format "tag:rssing.arm32.ax,2025-02-24:feed/~a" slug)
                #:title    title
-               #:articles (λ () (filter (cut article-title-contains? <> title)
-                                        (reddit-rss-articles "/user/SteelTrim.rss" #:posts-only? #t)))))
+               #:articles (λ () (reddit-json-articles
+                                   #:by   "SteelTrim"
+                                   #:when (λ (jsexpr) (string-contains? (hash-ref jsexpr 'title) title))))))
     (let ([slug  "wearing-power-armor-to-a-magic-school"]
           [title "Wearing Power Armor to a Magic School"])
       (feed/kw #:filename (format "~a.atom" slug)
