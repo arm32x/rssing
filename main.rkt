@@ -21,6 +21,18 @@
                                   #:by                  "SteelTrim"
                                   #:when-in-subreddit   "HFY"
                                   #:when-title-contains title))))
+
+    ; TODO - Add Patreon API support. This series releases one chapter ahead on Patreon for free.
+    (let ([slug  "magic-is-programming"]
+          [title "Magic is Programming"])
+      (feed/kw #:filename (format "~a.atom" slug)
+               #:id       (format "tag:rssing.arm32.ax,2025-03-06:feed/~a" slug)
+               #:title    title
+               #:articles (λ () (reddit-json-articles
+                                  #:by                  "Douglasjm"
+                                  #:when-in-subreddit   "HFY"
+                                  #:when-title-contains title))))
+
     (let ([slug  "wearing-power-armor-to-a-magic-school"]
           [title "Wearing Power Armor to a Magic School"])
       (feed/kw #:filename (format "~a.atom" slug)
