@@ -18,17 +18,18 @@
                #:id       (format "tag:rssing.arm32.ax,2025-02-24:feed/~a" slug)
                #:title    title
                #:articles (λ () (reddit-json-articles
-                                   #:by   "SteelTrim"
-                                   #:when (λ (jsexpr) (string-contains? (hash-ref jsexpr 'title) title))))))
+                                  #:by                  "SteelTrim"
+                                  #:when-in-subreddit   "HFY"
+                                  #:when-title-contains title))))
     (let ([slug  "wearing-power-armor-to-a-magic-school"]
           [title "Wearing Power Armor to a Magic School"])
       (feed/kw #:filename (format "~a.atom" slug)
                #:id       (format "tag:rssing.arm32.ax,2025-03-06:feed/~a" slug)
                #:title    title
                #:articles (λ () (reddit-json-articles
-                                   #:by   "Jcb112"
-                                   #:when (λ (jsexpr) (and (equal? (hash-ref jsexpr 'subreddit) "HFY")
-                                                           (string-contains? (hash-ref jsexpr 'title) title)))))))))
+                                  #:by                  "Jcb112"
+                                  #:when-in-subreddit   "HFY"
+                                  #:when-title-contains title))))))
 
 (define (write-xexpr-to-file xexpr file-path)
   (let ([output-port (open-output-file
