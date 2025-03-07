@@ -4,7 +4,9 @@
 (require net/url)
 (require net/url-connect)
 (require racket/generator)
+(require srfi/19)  ; Date handling
 
+(require "../article.rkt")
 (require "./reddit-common.rkt")
 (require "../utils/http.rkt")
 (require "../utils/threading.rkt")
@@ -45,14 +47,34 @@
                                                                        #:max-requests      (- max-requests 1)))))))
 
 (define (reddit-json-articles ; Username of Reddit user who posts the articles of interest (without u/)
-                              username
+                              #:by            username
                               ; A function that filters Reddit submissions as jsexprs before they're
                               ; processed into articles
                               #:when          [predicate (λ _ #t)]
-                              ; If true, rewrite all links to point to Redlib
-                              #:rewrite-urls? [rewrite-urls? #t]
                               ; Maximum number of articles to return
                               #:max-articles  [max-articles 10]
                               ; Maximum number of requests to make to Reddit before giving up
                               #:max-requests  [max-requests 5])
-  '() #| TODO |#)
+  (for/list ([submission-jsexpr (~> (reddit-json-user-submissions/stream username #:max-requests max-requests)
+                                    (stream-filter predicate _))]
+             [index             (in-naturals)]
+             #:break (>= index max-articles))
+    (let ([id              (hash-ref submission-jsexpr 'name)]
+          [title           (hash-ref submission-jsexpr 'title)]
+          [author-username (hash-ref submission-jsexpr 'author)]
+          [date-updated    (hash-ref submission-jsexpr 'edited)]
+          [date-published  (hash-ref submission-jsexpr 'created)]
+          [url             (hash-ref submission-jsexpr 'url)]
+          [content         (hash-ref submission-jsexpr 'selftext_html)])
+      (article/kw #:id             (format "tag:rssing.arm32.ax,2025-03-02:reddit/~a" id)
+                  #:title          title
+                  #:url            (rewrite-reddit-urls url)
+                  #:content        (cons 'html (rewrite-reddit-urls content))
+                  ; Reddit returns false instead of a timestamp if the post has never been edited
+                  #:date-updated   (if date-updated
+                                     (seconds->date date-updated #f)
+                                     (seconds->date date-published #f))
+                  #:date-published (seconds->date date-published #f)
+                  #:extra-metadata `((author
+                                       (name ,(format "/u/~a" author-username))
+                                       (uri ,(format "https://~a/user/~a" (redlib-host) author-username))))))))

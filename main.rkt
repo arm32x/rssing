@@ -6,6 +6,7 @@
 
 (require "./article.rkt")
 (require "./feed.rkt")
+(require "./sources/reddit-json.rkt")
 (require "./sources/reddit-rss.rkt")
 (require "./utils/threading.rkt")
 
@@ -16,7 +17,16 @@
                #:id       "tag:rssing.arm32.ax,2025-02-24:feed/engineering-magic-and-kitsune"
                #:title    title
                #:articles (λ () (filter (cut article-title-contains? <> title)
-                                        (reddit-rss-articles "/user/SteelTrim.rss" #:posts-only? #t)))))))
+                                        (reddit-rss-articles "/user/SteelTrim.rss" #:posts-only? #t)))))
+    (let ([slug  "wearing-power-armor-to-a-magic-school"]
+          [title "Wearing Power Armor to a Magic School"])
+      (feed/kw #:filename (format "~a.atom" slug)
+               #:id       (format "tag:rssing.arm32.ax,2025-03-06:feed/~a" slug)
+               #:title    title
+               #:articles (λ () (reddit-json-articles
+                                   #:by   "Jcb112"
+                                   #:when (λ (jsexpr) (and (equal? (hash-ref jsexpr 'subreddit) "HFY")
+                                                           (string-contains? (hash-ref jsexpr 'title) title)))))))))
 
 (define (write-xexpr-to-file xexpr file-path)
   (let ([output-port (open-output-file
