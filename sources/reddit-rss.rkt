@@ -29,9 +29,7 @@
 (define (reddit-rss-articles ; URL path to RSS (technically Atom) feed, with leading slash
                              feed-path
                              ; If true, only posts/submissions (fullname starts with t3_) will be included
-                             #:posts-only? [posts-only? #f]
-                             ; If true, rewrite all links to point to Redlib
-                             #:rewrite-urls? [rewrite-urls? #t])
+                             #:posts-only? [posts-only? #f])
   (let ([feed-xexpr (reddit-rss-feed-xexpr feed-path)])
     (for/list ([element-xexpr (list-tail feed-xexpr 2)]
                #:when (eqv? (first element-xexpr) 'entry)
