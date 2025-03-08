@@ -10,12 +10,30 @@
 
 (define feeds
   (list
-    (let ([title "Engineering, Magic, and Kitsune"])
-      (feed/kw #:filename "engineering-magic-and-kitsune.atom"
-               #:id       "tag:rssing.arm32.ax,2025-02-24:feed/engineering-magic-and-kitsune"
+    (let ([slug  "engineering-magic-and-kitsune"]
+          [title "Engineering, Magic, and Kitsune"])
+      (feed/kw #:filename (format "~a.atom" slug)
+               #:id       (format "tag:rssing.arm32.ax,2025-02-24:feed/~a" slug)
                #:title    title
                #:articles (λ () (filter (cut article-title-contains? <> title)
-                                        (reddit-rss-articles "/user/SteelTrim.rss" #:posts-only? #t)))))))
+                                        (reddit-rss-articles "/user/SteelTrim/submitted.rss" #:posts-only? #t)))))
+
+    ; TODO - Add Patreon API support. This series releases one chapter ahead on Patreon for free.
+    (let ([slug  "magic-is-programming"]
+          [title "Magic is Programming"])
+      (feed/kw #:filename (format "~a.atom" slug)
+               #:id       (format "tag:rssing.arm32.ax,2025-02-24:feed/~a" slug)
+               #:title    title
+               #:articles (λ () (filter (cut article-title-contains? <> title)
+                                        (reddit-rss-articles "/user/Douglasjm/submitted.rss" #:posts-only? #t)))))
+
+    (let ([slug  "wearing-power-armor-to-a-magic-school"]
+          [title "Wearing Power Armor to a Magic School"])
+      (feed/kw #:filename (format "~a.atom" slug)
+               #:id       (format "tag:rssing.arm32.ax,2025-02-24:feed/~a" slug)
+               #:title    title
+               #:articles (λ () (filter (cut article-title-contains? <> title)
+                                        (reddit-rss-articles "/user/Jcb112/submitted.rss" #:posts-only? #t)))))))
 
 (define (write-xexpr-to-file xexpr file-path)
   (let ([output-port (open-output-file
