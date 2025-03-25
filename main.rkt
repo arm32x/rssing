@@ -21,6 +21,10 @@
 
 (define feeds
   (list
+    (reddit-rss-feed #:slug     "dungeon-life"
+                     #:title    "Dungeon Life"
+                     #:username "Khenal")
+
     (reddit-rss-feed #:slug     "engineering-magic-and-kitsune"
                      #:title    "Engineering, Magic, and Kitsune"
                      #:username "SteelTrim")
