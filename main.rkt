@@ -50,6 +50,8 @@
       feed->xexpr
       (write-xexpr-to-file (feed-filename feed))))
 
-(for-each generate-feed feeds)
+(for ([feed feeds])
+  (printf "Generating ~a~n" (feed-filename feed))
+  (generate-feed feed))
 
 ; vim: sw=2 ts=2 et
