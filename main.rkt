@@ -8,32 +8,31 @@
 (require "./sources/reddit-rss.rkt")
 (require "./utils/threading.rkt")
 
+; FIXME - Should this be here or in sources/reddit-rss.rkt?
+(define (reddit-rss-feed #:slug     slug
+                         #:title    title
+                         #:username username)
+  (feed/kw #:filename (format "~a.atom" slug)
+           #:id       (format "tag:rssing.arm32.ax,2025-02-24:feed/~a" slug)
+           #:title    title
+           #:articles (λ () (filter (cut article-title-contains? <> title)
+                                    (reddit-rss-articles (format "/user/~a/submitted.rss" username)
+                                                         #:posts-only? #t)))))
+
 (define feeds
   (list
-    (let ([slug  "engineering-magic-and-kitsune"]
-          [title "Engineering, Magic, and Kitsune"])
-      (feed/kw #:filename (format "~a.atom" slug)
-               #:id       (format "tag:rssing.arm32.ax,2025-02-24:feed/~a" slug)
-               #:title    title
-               #:articles (λ () (filter (cut article-title-contains? <> title)
-                                        (reddit-rss-articles "/user/SteelTrim/submitted.rss" #:posts-only? #t)))))
+    (reddit-rss-feed #:slug     "engineering-magic-and-kitsune"
+                     #:title    "Engineering, Magic, and Kitsune"
+                     #:username "SteelTrim")
 
     ; TODO - Add Patreon API support. This series releases one chapter ahead on Patreon for free.
-    (let ([slug  "magic-is-programming"]
-          [title "Magic is Programming"])
-      (feed/kw #:filename (format "~a.atom" slug)
-               #:id       (format "tag:rssing.arm32.ax,2025-02-24:feed/~a" slug)
-               #:title    title
-               #:articles (λ () (filter (cut article-title-contains? <> title)
-                                        (reddit-rss-articles "/user/Douglasjm/submitted.rss" #:posts-only? #t)))))
+    (reddit-rss-feed #:slug     "magic-is-programming"
+                     #:title    "Magic is Programming"
+                     #:username "Douglasjm")
 
-    (let ([slug  "wearing-power-armor-to-a-magic-school"]
-          [title "Wearing Power Armor to a Magic School"])
-      (feed/kw #:filename (format "~a.atom" slug)
-               #:id       (format "tag:rssing.arm32.ax,2025-02-24:feed/~a" slug)
-               #:title    title
-               #:articles (λ () (filter (cut article-title-contains? <> title)
-                                        (reddit-rss-articles "/user/Jcb112/submitted.rss" #:posts-only? #t)))))))
+    (reddit-rss-feed #:slug     "wearing-power-armor-to-a-magic-school"
+                     #:title    "Wearing Power Armor to a Magic School"
+                     #:username "Jcb112")))
 
 (define (write-xexpr-to-file xexpr file-path)
   (let ([output-port (open-output-file
