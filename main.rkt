@@ -40,11 +40,6 @@
                      #:title    "Magic is Programming"
                      #:username "Douglasjm")
 
-    (reddit-rss-feed #:slug      "the-factory-must-grow"
-                     #:title     "The Factory Must Grow"
-                     #:username  "EV-187"
-                     #:subreddit "HFY")
-
     (reddit-rss-feed #:slug     "the-human-from-a-dungeon"
                      #:title    "The Human From a Dungeon"
                      #:username "itsdirector")
