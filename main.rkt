@@ -35,6 +35,10 @@
                      #:title    "Engineering, Magic, and Kitsune"
                      #:username "SteelTrim")
 
+    (reddit-rss-feed #:slug     "magic-is-electricity"
+                     #:title    "Magic is Electricity?!"
+                     #:username "97cweb")
+
     ; TODO - Add Patreon API support. This series releases one chapter ahead on Patreon for free.
     (reddit-rss-feed #:slug     "magic-is-programming"
                      #:title    "Magic is Programming"
