@@ -14,7 +14,7 @@
 ; The host to request Reddit RSS feeds from
 (define reddit-host (make-parameter "www.reddit.com"))
 ; The host of the redlib instance to use in generated feeds
-(define redlib-host (make-parameter "redlib.catsarch.com"))
+(define redlib-host (make-parameter "red.artemislena.eu"))
 
 ; TODO - Use a smarter implementation, possibly the one from Redlib
 (define (rewrite-urls url-string)
