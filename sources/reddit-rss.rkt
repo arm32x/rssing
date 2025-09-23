@@ -14,7 +14,8 @@
 ; The host to request Reddit RSS feeds from
 (define reddit-host (make-parameter "www.reddit.com"))
 ; The host of the redlib instance to use in generated feeds
-(define redlib-host (make-parameter "red.artemislena.eu"))
+; redlib.arm32.ax will redirect to whatever instance I currently prefer
+(define redlib-host (make-parameter "redlib.arm32.ax"))
 
 ; TODO - Use a smarter implementation, possibly the one from Redlib
 (define (rewrite-urls url-string)
