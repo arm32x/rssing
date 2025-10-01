@@ -23,10 +23,6 @@
 
 (define feeds
   (list
-    (reddit-rss-feed #:slug     "an-otherworldly-scholar"
-                     #:title    "An Otherworldly Scholar"
-                     #:username "ralo_ramone")
-
     (reddit-rss-feed #:slug     "dungeon-life"
                      #:title    "Dungeon Life"
                      #:username "Khenal")
