@@ -27,9 +27,11 @@
                      #:title    "Dungeon Life"
                      #:username "Khenal")
 
-    (reddit-rss-feed #:slug     "engineering-magic-and-kitsune"
-                     #:title    "Engineering, Magic, and Kitsune"
-                     #:username "SteelTrim")
+    ; As of 2025-10-20, the RSS feed for SteelTrim seems to be returning a 404?
+    ; We'll disable it for now
+    ;(reddit-rss-feed #:slug     "engineering-magic-and-kitsune"
+    ;                 #:title    "Engineering, Magic, and Kitsune"
+    ;                 #:username "SteelTrim")
 
     (reddit-rss-feed #:slug     "magic-is-electricity"
                      #:title    "Magic is Electricity?!"
