@@ -1,5 +1,4 @@
 #lang racket
-
 (require srfi/26)  ; cut macro
 (require xml)
 
@@ -27,20 +26,9 @@
                      #:title    "Dungeon Life"
                      #:username "Khenal")
 
-    ; As of 2025-10-20, the RSS feed for SteelTrim seems to be returning a 404?
-    ; We'll disable it for now
-    ;(reddit-rss-feed #:slug     "engineering-magic-and-kitsune"
-    ;                 #:title    "Engineering, Magic, and Kitsune"
-    ;                 #:username "SteelTrim")
-
     (reddit-rss-feed #:slug     "magic-is-electricity"
                      #:title    "Magic is Electricity?!"
                      #:username "97cweb")
-
-    ; TODO - Add Patreon API support. This series releases one chapter ahead on Patreon for free.
-    (reddit-rss-feed #:slug     "magic-is-programming"
-                     #:title    "Magic is Programming"
-                     #:username "Douglasjm")
 
     (reddit-rss-feed #:slug      "theres-always-another-level"
                      #:title     "There's Always Another Level"
