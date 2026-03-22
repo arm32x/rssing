@@ -22,10 +22,6 @@
 
 (define feeds
   (list
-    (reddit-rss-feed #:slug     "dungeon-life"
-                     #:title    "Dungeon Life"
-                     #:username "Khenal")
-
     (reddit-rss-feed #:slug     "magic-is-electricity"
                      #:title    "Magic is Electricity?!"
                      #:username "97cweb")
