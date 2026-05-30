@@ -36,7 +36,7 @@
     (for/list ([element-xexpr (list-tail feed-xexpr 2)]
                #:when (eqv? (first element-xexpr) 'entry)
                #:do   [(define id           (se-path* '(entry id) element-xexpr))
-                       (define title        (se-path* '(entry title) element-xexpr))
+                       (define title        (string-join (se-path*/list '(entry title) element-xexpr) ""))
                        (define author-name  (se-path* '(entry author name) element-xexpr))
                        (define author-url   (se-path* '(entry author uri) element-xexpr))
                        (define date-updated (se-path* '(entry updated) element-xexpr))

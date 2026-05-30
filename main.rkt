@@ -23,8 +23,7 @@
 (define feeds
   (list
     (reddit-rss-feed #:slug     "galactic-qa-test-environment"
-                     ; is this title too long? only time will tell
-                     #:title    "We're the galactic QA test environment, and humanity just found the patch notes."
+                     #:title    "Earth isn't a \"deathworld.\" We're the galactic QA test environment, and humanity just found the patch notes."
                      #:username "Ok_Kangaroo56")
 
     (reddit-rss-feed #:slug     "magic-is-electricity"
