@@ -1,5 +1,4 @@
-#lang racket
-(require srfi/26)  ; cut macro
+#lang racket(require srfi/26)  ; cut macro
 (require xml)
 
 (require "./article.rkt")
@@ -22,10 +21,6 @@
 
 (define feeds
   (list
-    (reddit-rss-feed #:slug     "galactic-qa-test-environment"
-                     #:title    "Earth isn't a \"deathworld.\" We're the galactic QA test environment, and humanity just found the patch notes."
-                     #:username "Ok_Kangaroo56")
-
     (reddit-rss-feed #:slug     "magic-is-electricity"
                      #:title    "Magic is Electricity?!"
                      #:username "97cweb")
