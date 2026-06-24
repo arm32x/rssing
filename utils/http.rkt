@@ -5,10 +5,7 @@
 (require "./threading.rkt")
 
 (provide ensure-success-status-code)
-(provide exn:fail:network:http)
-(provide exn:fail:network:http?)
-(provide exn:fail:network:http-status-code)
-(provide exn:fail:network:http-reason-phrase)
+(provide (struct-out exn:fail:network:http))
 (provide header-ref)
 
 (struct exn:fail:network:http exn:fail:network (status-code reason-phrase)
