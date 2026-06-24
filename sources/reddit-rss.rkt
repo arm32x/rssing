@@ -17,6 +17,8 @@
 ; redlib.arm32.ax will redirect to whatever instance I currently prefer
 (define redlib-host (make-parameter "redlib.arm32.ax"))
 
+; User-Agent to pass to Reddit
+(define user-agent "rssing/1.0")
 ; Maximum number of times to retry requests, not including the initial attempt
 (define max-retry-attempts 3)
 
@@ -27,7 +29,9 @@
 (define (reddit-rss-feed-xexpr feed-path)
   (let retry ([retry-attempts-remaining max-retry-attempts])
     (let-values ([[status-line headers input-port]
-                  (http-sendrecv (reddit-host) feed-path #:ssl? 'secure)])
+                  (http-sendrecv (reddit-host) feed-path
+                                 #:ssl? 'secure
+                                 #:headers (list (format "User-Agent: ~a" user-agent)))])
       ; TODO - Do this without exceptions
       (with-handlers ([(λ (ex)
                          (and 
