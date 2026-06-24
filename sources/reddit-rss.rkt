@@ -24,7 +24,20 @@
 (define (reddit-rss-feed-xexpr feed-path)
   (let-values ([[status-line headers input-port]
                 (http-sendrecv (reddit-host) feed-path #:ssl? 'secure)])
-    (ensure-success-status-code status-line)
+    ; TODO - Do this without exceptions
+    (with-handlers ([(λ (ex)
+                       (and 
+                         (exn:fail:network:http? ex)
+                         (equal? (exn:fail:network:http-status-code ex) 429)))
+                     (λ (ex)
+                        (printf "Hit rate limit: ~a ~a~n"
+                                (exn:fail:network:http-status-code ex)
+                                (exn:fail:network:http-reason-phrase ex))
+                        (printf "Rate limit used: ~a~n" (header-ref headers "x-ratelimit-used"))
+                        (printf "Rate limit remaining: ~a~n" (header-ref headers "x-ratelimit-remaining"))
+                        (printf "Rate limit reset: ~a~n" (header-ref headers "x-ratelimit-reset"))
+                        (raise ex))])
+      (ensure-success-status-code status-line))
     (~> input-port read-xml document-element xml->xexpr)))
 
 (define (reddit-rss-articles ; URL path to RSS (technically Atom) feed, with leading slash
