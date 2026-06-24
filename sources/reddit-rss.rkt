@@ -21,7 +21,7 @@
 (define redlib-host (make-parameter "redlib.arm32.ax"))
 
 ; User-Agent to pass to Reddit
-(define user-agent "rssing/1.0")
+(define user-agent "RSSing/1.0")
 ; Maximum number of times to retry requests, not including the initial attempt
 (define max-retry-attempts 3)
 
