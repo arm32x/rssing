@@ -39,12 +39,9 @@
                             (exn:fail:network:http? ex)
                             (equal? (exn:fail:network:http-status-code ex) 429)))
                        (λ (ex)
-                          (printf "Hit rate limit")
-                          (printf "Rate limit used: ~a~n" (header-ref headers "x-ratelimit-used"))
-                          (printf "Rate limit remaining: ~a~n" (header-ref headers "x-ratelimit-remaining"))
+                          (printf "Hit rate limit~n")
                           (let* ([reset-seconds-real (string->number (header-ref headers "x-ratelimit-reset"))]
                                  [reset-seconds-used (+ reset-seconds-real 1)])
-                            (printf "Rate limit reset: ~a~n" reset-seconds-real)
                             (if (> retry-attempts-remaining 0)
                               (begin
                                 (printf "Retrying in ~a seconds (attempt ~a of ~a)...~n"
@@ -59,7 +56,6 @@
                                 (printf "Max retry attempts reached~n")
                                 (raise ex)))))])
         (ensure-success-status-code status-line)
-        (printf "Response body start: ~v~n" (peek-bytes 100 0 input-port))
         (~> input-port read-xml document-element xml->xexpr)))))
 
 (define (reddit-rss-articles ; URL path to RSS (technically Atom) feed, with leading slash
