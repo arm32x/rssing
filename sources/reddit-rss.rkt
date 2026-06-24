@@ -1,15 +1,18 @@
 #lang racket
 
 (require net/http-client)
+(require srfi/26)  ; cut macro
 (require xml)
 (require xml/path)
 
 (require "../article.rkt")
+(require "../feed.rkt")
 (require "../utils/dates.rkt")
 (require "../utils/http.rkt")
 (require "../utils/threading.rkt")
 
 (provide reddit-rss-articles)
+(provide reddit-rss-feed)
 
 ; The host to request Reddit RSS feeds from
 (define reddit-host (make-parameter "www.reddit.com"))
@@ -89,3 +92,15 @@
                   #:extra-metadata `((author
                                        (name ,author-name)
                                        (uri ,(rewrite-urls author-url))))))))
+
+(define (reddit-rss-feed #:slug      slug
+                         #:title     title
+                         #:username  username
+                         #:subreddit [subreddit 'any])
+  (feed/kw #:filename (format "~a.atom" slug)
+           #:id       (format "tag:rssing.arm32.ax,2025-02-24:feed/~a" slug)
+           #:title    title
+           #:articles (λ () (filter (cut article-title-contains? <> title)
+                                    (reddit-rss-articles (format "/user/~a/submitted.rss" username)
+                                                         #:posts-only? #t
+                                                         #:subreddit   subreddit)))))

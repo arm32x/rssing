@@ -8,19 +8,6 @@
 (require "./sources/reddit-rss.rkt")
 (require "./utils/threading.rkt")
 
-; FIXME - Should this be here or in sources/reddit-rss.rkt?
-(define (reddit-rss-feed #:slug      slug
-                         #:title     title
-                         #:username  username
-                         #:subreddit [subreddit 'any])
-  (feed/kw #:filename (format "~a.atom" slug)
-           #:id       (format "tag:rssing.arm32.ax,2025-02-24:feed/~a" slug)
-           #:title    title
-           #:articles (λ () (filter (cut article-title-contains? <> title)
-                                    (reddit-rss-articles (format "/user/~a/submitted.rss" username)
-                                                         #:posts-only? #t
-                                                         #:subreddit   subreddit)))))
-
 (define feeds
   (list
     (reddit-rss-feed #:slug      "magic-is-electricity"
