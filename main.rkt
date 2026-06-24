@@ -52,6 +52,11 @@
       feed->xexpr
       (write-xexpr-to-file (feed-filename feed))))
 
+; Make sure output is line-buffered so GitHub Actions logs aren't delayed
+(with-handlers ([exn:fail?
+                 (λ () (eprintf "Warning: Could not set stdout to line-buffered. Messages may be delayed~n"))])
+  (file-stream-buffer-mode (current-output-port) 'line))
+
 (for ([feed feeds])
   (printf "Generating ~a~n" (feed-filename feed))
   (generate-feed feed))
