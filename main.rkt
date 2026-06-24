@@ -23,18 +23,18 @@
 
 (define feeds
   (list
-    (reddit-rss-feed #:slug     "magic-is-electricity"
-                     #:title    "Magic is Electricity?!"
-                     #:username "97cweb")
+    (reddit-rss-feed #:slug      "magic-is-electricity"
+                     #:title     "Magic is Electricity?!"
+                     #:username  "97cweb")
 
     (reddit-rss-feed #:slug      "theres-always-another-level"
                      #:title     "There's Always Another Level"
                      #:username  "PerilousPlatypus"
                      #:subreddit "PerilousPlatypus")
 
-    (reddit-rss-feed #:slug     "wearing-power-armor-to-a-magic-school"
-                     #:title    "Wearing Power Armor to a Magic School"
-                     #:username "Jcb112")))
+    (reddit-rss-feed #:slug      "wearing-power-armor-to-a-magic-school"
+                     #:title     "Wearing Power Armor to a Magic School"
+                     #:username  "Jcb112")))
 
 (define (write-xexpr-to-file xexpr file-path)
   (let ([output-port (open-output-file
