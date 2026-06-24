@@ -1,4 +1,6 @@
-#lang racket(require srfi/26)  ; cut macro
+#lang racket
+
+(require srfi/26)  ; cut macro
 (require xml)
 
 (require "./article.rkt")
