@@ -32,15 +32,14 @@
                   (http-sendrecv (reddit-host) feed-path
                                  #:ssl? 'secure
                                  #:headers (list (format "User-Agent: ~a" user-agent)))])
+      (printf "~a~n" status-line)
       ; TODO - Do this without exceptions
       (with-handlers ([(λ (ex)
-                         (and 
-                           (exn:fail:network:http? ex)
-                           (equal? (exn:fail:network:http-status-code ex) 429)))
+                          (and
+                            (exn:fail:network:http? ex)
+                            (equal? (exn:fail:network:http-status-code ex) 429)))
                        (λ (ex)
-                          (printf "Hit rate limit: ~a ~a~n"
-                                  (exn:fail:network:http-status-code ex)
-                                  (exn:fail:network:http-reason-phrase ex))
+                          (printf "Hit rate limit")
                           (printf "Rate limit used: ~a~n" (header-ref headers "x-ratelimit-used"))
                           (printf "Rate limit remaining: ~a~n" (header-ref headers "x-ratelimit-remaining"))
                           (let* ([reset-seconds-real (string->number (header-ref headers "x-ratelimit-reset"))]
@@ -59,8 +58,9 @@
                               (begin
                                 (printf "Max retry attempts reached~n")
                                 (raise ex)))))])
-        (ensure-success-status-code status-line))
-      (~> input-port read-xml document-element xml->xexpr))))
+        (ensure-success-status-code status-line)
+        (printf "Response body start: ~v~n" (peek-bytes 100 0 input-port))
+        (~> input-port read-xml document-element xml->xexpr)))))
 
 (define (reddit-rss-articles ; URL path to RSS (technically Atom) feed, with leading slash
                              feed-path
