@@ -31,13 +31,19 @@
 
 ; TODO - Would it be better to eagerly parse the headers into a hash table?
 (define (header-ref headers header-name)
-  (ormap
-    (match-λ
-      [(regexp #px"^(\\S+): (.*)$" (list _ name-bytes value-bytes))
-       (let ([name  (bytes->string/latin-1 name-bytes)]
-             [value (bytes->string/latin-1 value-bytes)])
-         (if (string-ci=? name header-name)
-           value
-           #f))]
-      [_ #f])
-    headers))
+  ; this code is shit
+  (let ([result (ormap
+                  (match-λ
+                    [(regexp #px"^(\\S+): (.*)$" (list _ name-bytes value-bytes))
+                     (let ([name  (bytes->string/latin-1 name-bytes)]
+                           [value (bytes->string/latin-1 value-bytes)])
+                       (if (string-ci=? name header-name)
+                         value
+                         #f))]
+                    [_ #f])
+                  headers)])
+    (if result
+      result
+      (raise-arguments-error 'header-ref
+                             "no value found for header"
+                             "name" header-name))))

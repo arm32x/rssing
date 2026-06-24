@@ -17,28 +17,46 @@
 ; redlib.arm32.ax will redirect to whatever instance I currently prefer
 (define redlib-host (make-parameter "redlib.arm32.ax"))
 
+; Maximum number of times to retry requests, not including the initial attempt
+(define max-retry-attempts 3)
+
 ; TODO - Use a smarter implementation, possibly the one from Redlib
 (define (rewrite-urls url-string)
   (string-replace url-string (reddit-host) (redlib-host) #:all? #t))
 
 (define (reddit-rss-feed-xexpr feed-path)
-  (let-values ([[status-line headers input-port]
-                (http-sendrecv (reddit-host) feed-path #:ssl? 'secure)])
-    ; TODO - Do this without exceptions
-    (with-handlers ([(λ (ex)
-                       (and 
-                         (exn:fail:network:http? ex)
-                         (equal? (exn:fail:network:http-status-code ex) 429)))
-                     (λ (ex)
-                        (printf "Hit rate limit: ~a ~a~n"
-                                (exn:fail:network:http-status-code ex)
-                                (exn:fail:network:http-reason-phrase ex))
-                        (printf "Rate limit used: ~a~n" (header-ref headers "x-ratelimit-used"))
-                        (printf "Rate limit remaining: ~a~n" (header-ref headers "x-ratelimit-remaining"))
-                        (printf "Rate limit reset: ~a~n" (header-ref headers "x-ratelimit-reset"))
-                        (raise ex))])
-      (ensure-success-status-code status-line))
-    (~> input-port read-xml document-element xml->xexpr)))
+  (let retry ([retry-attempts-remaining max-retry-attempts])
+    (let-values ([[status-line headers input-port]
+                  (http-sendrecv (reddit-host) feed-path #:ssl? 'secure)])
+      ; TODO - Do this without exceptions
+      (with-handlers ([(λ (ex)
+                         (and 
+                           (exn:fail:network:http? ex)
+                           (equal? (exn:fail:network:http-status-code ex) 429)))
+                       (λ (ex)
+                          (printf "Hit rate limit: ~a ~a~n"
+                                  (exn:fail:network:http-status-code ex)
+                                  (exn:fail:network:http-reason-phrase ex))
+                          (printf "Rate limit used: ~a~n" (header-ref headers "x-ratelimit-used"))
+                          (printf "Rate limit remaining: ~a~n" (header-ref headers "x-ratelimit-remaining"))
+                          (let* ([reset-seconds-real (string->number (header-ref headers "x-ratelimit-reset"))]
+                                 [reset-seconds-used (+ reset-seconds-real 1)])
+                            (printf "Rate limit reset: ~a~n" reset-seconds-real)
+                            (if (> retry-attempts-remaining 0)
+                              (begin
+                                (printf "Retrying in ~a seconds (attempt ~a of ~a)...~n"
+                                        reset-seconds-used
+                                        (+ 1 (- max-retry-attempts retry-attempts-remaining))
+                                        max-retry-attempts)
+                                (sleep reset-seconds-used)
+                                (printf "Retrying...~n")
+                                ; Hopefully this has tail call elimination
+                                (retry (- retry-attempts-remaining 1)))
+                              (begin
+                                (printf "Max retry attempts reached~n")
+                                (raise ex)))))])
+        (ensure-success-status-code status-line))
+      (~> input-port read-xml document-element xml->xexpr))))
 
 (define (reddit-rss-articles ; URL path to RSS (technically Atom) feed, with leading slash
                              feed-path
