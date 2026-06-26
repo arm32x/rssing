@@ -19,6 +19,10 @@
                      #:username  "PerilousPlatypus"
                      #:subreddit "PerilousPlatypus")
 
+    (reddit-rss-feed #:slug      "verbum-magia"
+                     #:title     "Verbum Magia"
+                     #:username  "LadyLuna21")
+
     (reddit-rss-feed #:slug      "wearing-power-armor-to-a-magic-school"
                      #:title     "Wearing Power Armor to a Magic School"
                      #:username  "Jcb112")))
